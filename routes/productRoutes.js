@@ -42,8 +42,8 @@ router.post('/', async (req, res) => {
 
 // Route: PUT /products/:productId
 // Update a product by ID
-router.put('/products/:id', async (req, res) => {
-    const productId = req.params.name;
+router.put('/:id', async (req, res) => {
+    const productId = req.params.id;
     const updatedProduct = req.body;
   
     try {
@@ -72,7 +72,7 @@ router.delete('/:id', async (req, res) => {
       const deletedProduct = await Product.findOneAndRemove({ id: productId });
   
       if (deletedProduct) {
-        res.json(deletedProduct);
+        res.json({message: "product deleted"});
       } else {
         res.status(404).json({ error: 'Product not found' });
       }

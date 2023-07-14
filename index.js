@@ -19,7 +19,7 @@ app.use(express.json());
 app.use('/api/products', productRoutes);
 
 
-// Define your routes
+
 app.get('/', (req, res) => {
     res.send('Welcome to e-Commerce store backend!');
 });
