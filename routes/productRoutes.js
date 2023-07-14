@@ -1,12 +1,11 @@
 import express from 'express';
 import Product from '../models/Product.js';
-import adminAuth from '../middleware/adminAuthMiddleware.js';
 
 const router = express.Router();
 
 // Route: GET /products
 // Get all products
-router.get('/products', adminAuth, async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const products = await Product.find();
     res.json(products);
@@ -17,9 +16,9 @@ router.get('/products', adminAuth, async (req, res) => {
 
 // Route: GET /products/:productId
 // Get a specific product by ID
-router.get('/products/:productId', adminAuth, async (req, res) => {
+router.get('/:productId', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.productId);
+    const product = await Product.find({id : req.params.productId});
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
@@ -31,11 +30,9 @@ router.get('/products/:productId', adminAuth, async (req, res) => {
 
 // Route: POST /products
 // Create a new product
-router.post('/products', adminAuth, async (req, res) => {
-  const { title, description, price } = req.body;
-
+router.post('/', async (req, res) => {
   try {
-    const newProduct = new Product({ title, description, price });
+    const newProduct = new Product(req.body);
     const savedProduct = await newProduct.save();
     res.status(201).json(savedProduct);
   } catch (error) {
@@ -45,36 +42,43 @@ router.post('/products', adminAuth, async (req, res) => {
 
 // Route: PUT /products/:productId
 // Update a product by ID
-router.put('/products/:productId', adminAuth, async (req, res) => {
-  const { title, description, price } = req.body;
-
-  try {
-    const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.productId,
-      { title, description, price },
-      { new: true }
-    );
-    if (!updatedProduct) {
-      return res.status(404).json({ error: 'Product not found' });
+router.put('/products/:id', async (req, res) => {
+    const productId = req.params.name;
+    const updatedProduct = req.body;
+  
+    try {
+      const product = await Product.findOneAndUpdate(
+        { id: productId },
+        updatedProduct,
+        { new: true }
+      );
+  
+      if (product) {
+        res.json(product);
+      } else {
+        res.status(404).json({ error: 'Product not found' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
     }
-    res.json(updatedProduct);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update product' });
-  }
-});
+  });
 
 // Route: DELETE /products/:productId
 // Delete a product by ID
-router.delete('/products/:productId', adminAuth, async (req, res) => {
-  try {
-    const deletedProduct = await Product.findByIdAndDelete(req.params.productId);
-    if (!deletedProduct) {
-      return res.status(404).json({ error: 'Product not found' });
+router.delete('/:id', async (req, res) => {
+    const productId = req.params.id;
+  
+    try {
+      const deletedProduct = await Product.findOneAndRemove({ id: productId });
+  
+      if (deletedProduct) {
+        res.json(deletedProduct);
+      } else {
+        res.status(404).json({ error: 'Product not found' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
     }
-    res.json({ message: 'Product deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete product' });
-  }
-});
+  });
 
 export default router;
