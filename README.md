@@ -1,5 +1,5 @@
 # assignment
-A basic REST API for a simple e-commerce application made using Node.js and Express. The API should includes basic  functionalities like listing products, creating a new product, updating a product, and deleting a product.
+A basic REST API for a simple e-commerce application made using Node.js and Express. The API includes basic functionalities like listing products, creating a new product, updating a product, and deleting a product.
 
 ## Getting Started
 
